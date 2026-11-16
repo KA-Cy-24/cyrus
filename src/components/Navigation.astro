@@ -3,7 +3,7 @@ import site from '../data/site.json';
 interface NavItem { label: string; href: string; section?: string; }
 const { items = [], active = 'home', base = '/' } = Astro.props as { items: NavItem[]; active: string; base: string };
 const withBase = (path: string) =>
-  `${base.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`;
+  `/${base.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`;
 ---
 <header class="site-header" data-pagefind-ignore>
   <a class="wordmark" href={withBase('/')} aria-label={`${site.shortName} home`}>
