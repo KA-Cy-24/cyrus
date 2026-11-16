@@ -103,7 +103,9 @@ const ornaments = [
 </BaseLayout>
 <script>
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const ornaments = Array.from(document.querySelectorAll('[data-home-ornament]'));
+  const ornaments = Array.from(
+    document.querySelectorAll<HTMLImageElement>('[data-home-ornament]')
+  );
   if (ornaments.length && !prefersReducedMotion) {
     const updateOrnaments = () => {
       const viewportHeight = window.innerHeight;
@@ -122,9 +124,9 @@ const ornaments = [
         el.style.transform = `translate3d(0, ${y}px, 0) rotate(${rotation + visibility * 3}deg) scale(${dynamicScale})`;
       });
     };
-    let frame;
+    let frame: number | null = null;
     const requestUpdate = () => {
-      if (frame) cancelAnimationFrame(frame);
+      if (frame !== null) cancelAnimationFrame(frame);
       frame = requestAnimationFrame(updateOrnaments);
     };
     window.addEventListener('scroll', requestUpdate, { passive: true });

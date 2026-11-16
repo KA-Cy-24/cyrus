@@ -3,11 +3,11 @@ import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
 const linksSchema = z.object({
-  github: z.string().url().optional(),
-  publication: z.string().url().optional(),
-  demo: z.string().url().optional(),
-  documentation: z.string().url().optional(),
-  launch: z.string().url().optional()
+  github: z.string().optional(),
+  publication: z.string().optional(),
+  demo: z.string().optional(),
+  documentation: z.string().optional(),
+  launch: z.string().optional()
 }).optional();
 
 const projects = defineCollection({
@@ -106,7 +106,7 @@ const cv = defineCollection({
     })).optional(),
     location: z.string().optional(),
     description: z.string().optional(),
-    url: z.string().url().optional(),
+    url: z.string().optional(),
     order: z.number().int().default(100),
     draft: z.boolean().default(false)
   })
