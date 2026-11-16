@@ -15,7 +15,8 @@ const recentNotes = allNotes
   .slice(0, site.recentNotebookLimit);
 const allProjects = await getCollection('projects', ({ data }) => !data.draft);
 const allTools = await getCollection('tools', ({ data }) => !data.draft);
-const withBase = (path: string) => `${base}${path.replace(/^\/+/, '')}`;
+const withBase = (path: string) =>
+  `${base.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`;
 const heroPrimary = site.heroPrimaryLink ?? { label: 'Explore projects', href: '/projects/' };
 const heroSecondary = site.heroSecondaryLink ?? { label: 'Open CV.live', href: '/cv/' };
 const labels = site.homeSectionMeta ?? {};
