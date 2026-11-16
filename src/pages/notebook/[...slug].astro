@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+import Interactive from '../../components/mdx/Interactive.astro';
+import Figure from '../../components/mdx/Figure.astro';
+import Callout from '../../components/mdx/Callout.astro';
+const base = import.meta.env.BASE_URL;
+const projectEntries = await getCollection('projects', ({ data }) => !data.draft);
+const notebookEntries = await getCollection('notebook', ({ data }) => !data.draft);
+const projectHrefById = new Map(projectEntries.map((item) => [item.data.id, `${base}projects/${item.data.slug ?? item.id}/`]));
+const noteHrefById = new Map(notebookEntries.map((item) => [item.data.id, `${base}notebook/${item.data.slug ?? item.id}/`]));
+const components = { Interactive, Figure, Callout };
+export async function getStaticPaths() {
+  const entries = await getCollection('notebook', ({ data }) => !data.draft);
+  return entries.map((entry) => ({ params: { slug: entry.data.slug ?? entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+const data = entry.data;
+const date = data.updatedAt ?? data.publishedAt;
+const dateLabel = date ? new Intl.DateTimeFormat('en', { year: 'numeric', month: 'long', day: 'numeric' }).format(date) : '';
+---
+<BaseLayout title={data.title} description={data.description} section="notebook">
+  <article class="content-page notebook-article">
+    <a class="back-link" href={`${base}notebook/`}>← Notebook</a>
+    <header class="article-header"><p class="eyebrow">{data.category}{dateLabel ? ` / ${dateLabel}` : ''}</p><h1>{data.title}</h1><p class="article-lede">{data.description}</p><div class="article-meta">{data.tags.map((tag) => <span>{tag}</span>)}</div></header>
+    {data.toc && headings.filter((heading) => heading.depth <= 3).length > 1 && <nav class="article-toc" aria-label="Table of contents"><p class="eyebrow">ON THIS PAGE</p><ol>{headings.filter((heading) => heading.depth <= 3).map((heading) => <li class:list={{ 'toc-nested': heading.depth === 3 }}><a href={`#${heading.slug}`}>{heading.text}</a></li>)}</ol></nav>}
+    <div class="prose"><Content components={components} /></div>
+    {(data.relatedProjects.length || data.relatedNotes.length) > 0 && <aside class="related-content"><p class="eyebrow">Connected entries</p><h2>Related work</h2>{data.relatedProjects.map((id) => <p><a href={projectHrefById.get(id) ?? `${base}projects/`}>{projectEntries.find((item) => item.data.id === id)?.data.title ?? id} ↗</a></p>)}{data.relatedNotes.map((id) => <p><a href={noteHrefById.get(id) ?? `${base}notebook/`}>{notebookEntries.find((item) => item.data.id === id)?.data.title ?? id} ↗</a></p>)}</aside>}
+  </article>
+</BaseLayout>

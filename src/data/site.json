@@ -1,0 +1,65 @@
+{
+  "name": "KOUROSH AFSHINJOO",
+  "shortName": "Kourosh Afshinjoo",
+  "description": "Scientific research, computational projects, software, and notebook entries by Kourosh Afshinjoo.",
+  "tagline": "Biotechnology researcher · computational biology · scientific software",
+  "heroTitle": "Kourosh Afshinjoo",
+  "heroDescription": "I work across molecular biology, bioinformatics, machine learning, and scientific tooling—developing research projects, computational experiments, and software that help make complex biological systems easier to understand.",
+  "navigation": [
+    {
+      "label": "Home",
+      "href": "/",
+      "section": "home"
+    },
+    {
+      "label": "Projects",
+      "href": "/projects/",
+      "section": "projects"
+    },
+    {
+      "label": "Tools",
+      "href": "/tools/",
+      "section": "tools"
+    },
+    {
+      "label": "Notebook",
+      "href": "/notebook/",
+      "section": "notebook"
+    },
+    {
+      "label": "CV.live",
+      "href": "/cv/",
+      "section": "cv"
+    },
+    {
+      "label": "About",
+      "href": "/about/",
+      "section": "about"
+    }
+  ],
+  "social": [],
+  "featuredProjectLimit": 3,
+  "recentNotebookLimit": 3,
+  "cvDisplayName": "Kourosh Afshinjoo",
+  "heroSubtitle": "Biotechnology researcher building computational ways to study living systems.",
+  "footerText": "A living archive of research, software, and scientific notes.",
+  "footerBackToTopLabel": "Back to top",
+  "heroPrimaryLink": {
+    "label": "Explore projects",
+    "href": "/projects/"
+  },
+  "heroSecondaryLink": {
+    "label": "Open CV.live",
+    "href": "/cv/"
+  },
+  "homeSectionMeta": {
+    "featuredEyebrow": "Projects / selected",
+    "featuredTitle": "Selected work",
+    "featuredLinkLabel": "All projects",
+    "notebookEyebrow": "Notebook / recent entries",
+    "notebookTitle": "From the notebook",
+    "notebookLinkLabel": "Open notebook",
+    "archiveEyebrow": "Archive snapshot",
+    "archiveTitle": "A website that grows with the work."
+  }
+}

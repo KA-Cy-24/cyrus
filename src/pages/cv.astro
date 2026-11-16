@@ -1,0 +1,103 @@
+---
+import '../styles/cv.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+import cvPage from '../data/cv.json';
+
+const entries = (await getCollection('cv', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.order - b.data.order);
+const groups = (await Promise.all(cvPage.groups.map(async ([key, label]) => ({
+  key,
+  label,
+  items: await Promise.all(entries.filter(({ data }) => data.section === key)
+    .map(async (entry) => ({ data: entry.data, ...(await render(entry)) })))
+})))).filter(({ items }) => items.length > 0);
+const cefrLevels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
+---
+
+<BaseLayout title="CV.live" description={cvPage.description} section="cv">
+  <div class="cv-view">
+    <header class="page-intro cv-intro">
+      <div class="cv-intro-copy">
+        {cvPage.eyebrow && <p class="eyebrow">{cvPage.eyebrow}</p>}
+        <h1>{cvPage.title}<span class="accent-dot" aria-hidden="true">.</span></h1>
+        {cvPage.lede && <p class="page-lede">{cvPage.lede}</p>}
+        {cvPage.contact.length > 0 && <ul class="cv-contact" aria-label="Contact information">
+          {cvPage.contact.map(({ label, value, href }) => (
+            <li><span>{label}</span> <a href={href}>{value}</a></li>
+          ))}
+        </ul>}
+      </div>
+      <div class="cv-intro-actions no-print">
+        <span class="cv-live-mark"><span aria-hidden="true"></span> Live document</span>
+        <button class="button button-primary" type="button" data-print-cv>
+          {cvPage.printLabel} <span aria-hidden="true">↓</span>
+        </button>
+      </div>
+    </header>
+
+    {groups.length ? <div class="cv-document">
+      {groups.map(({ key, label, items }, index) => (
+        <section class:list={['cv-section', `cv-section-${key}`]} aria-labelledby={`cv-${key}`}>
+          <div class="cv-section-heading">
+            <span class="cv-section-index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+            <h2 id={`cv-${key}`}>{label}</h2>
+          </div>
+
+          {key === 'skill' ? <div class="cv-skills-grid">
+            {items.map(({ data, Content }, skillIndex) => (
+              <article class:list={['cv-skill-card', { 'cv-language-card': data.languages?.length }]}>
+                <header class="cv-skill-card-header">
+                  <span class="cv-skill-index" aria-hidden="true">{String(skillIndex + 1).padStart(2, '0')}</span>
+                  <h3>{data.title}</h3>
+                </header>
+                {data.languages?.length ? <ul class="cv-language-grid" aria-label="CEFR language proficiency">
+                  {data.languages.map(({ name, level, approximate, exams }) => (
+                    <li class="cv-language">
+                      <div class="cv-language-heading"><h4>{name}</h4><strong>{approximate ? '~' : ''}{level}</strong></div>
+                      <p class="sr-only">CEFR level {approximate ? 'approximately ' : ''}{level}.</p>
+                      <div class="cv-cefr-scale" aria-hidden="true">
+                        {cefrLevels.map((step, stepIndex) => (
+                          <span class:list={['cv-cefr-step', { 'cv-cefr-filled': stepIndex <= cefrLevels.indexOf(level), 'cv-cefr-current': step === level }]}>{step}</span>
+                        ))}
+                      </div>
+                      {exams.length > 0 && <ul class="cv-exams" aria-label="Standardized exams">
+                        {exams.map((exam) => <li>{exam.name} <strong>{exam.score}</strong>{exam.date && <> ({exam.date})</>}</li>)}
+                      </ul>}
+                    </li>
+                  ))}
+                </ul> : <div class="cv-skill-details cv-record-body">
+                  {data.description && <p class="cv-description">{data.description}</p>}
+                  <Content />
+                </div>}
+              </article>
+            ))}
+          </div> : <div class:list={[key === 'reference' ? 'cv-reference-list' : 'cv-timeline']}>
+            {items.map(({ data, Content }) => (
+              <article class:list={['cv-entry', { 'cv-entry-undated': !data.period }]}>
+                {data.period && <div class="cv-entry-date">
+                  <strong>{data.period}</strong>
+                  {data.periodNote && <small>({data.periodNote})</small>}
+                </div>}
+                <div class="cv-entry-content">
+                  <h3>{data.title}</h3>
+                  {(data.organization || data.location) && <p class="cv-organization">
+                    {[data.organization, data.location].filter(Boolean).join(' · ')}
+                  </p>}
+                  {data.description && <p class="cv-description">{data.description}</p>}
+                  <div class="cv-record-body"><Content /></div>
+                  {data.url && <a href={data.url}>More information <span aria-hidden="true">↗</span></a>}
+                </div>
+              </article>
+            ))}
+          </div>}
+        </section>
+      ))}
+    </div> : <div class="cv-empty"><h2>No CV entries yet.</h2></div>}
+    {cvPage.footnote && <p class="cv-footnote no-print">{cvPage.footnote}</p>}
+  </div>
+</BaseLayout>
+
+<script>
+  document.querySelector('[data-print-cv]')?.addEventListener('click', () => window.print());
+</script>

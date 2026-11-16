@@ -1,0 +1,11 @@
+---
+const { id, label = 'Interactive demonstration', ...props } = Astro.props;
+const payload = JSON.stringify({ ...props, base: import.meta.env.BASE_URL });
+---
+<div class="interactive-block" data-interactive-id={id} data-interactive-props={payload} role="region" aria-label={label}>
+  <p class="interactive-fallback">Interactive module <code>{id}</code> will load here when JavaScript is available.</p>
+</div>
+<script>
+  import { initInteractiveModules } from '../../scripts/interactive-registry';
+  initInteractiveModules();
+</script>

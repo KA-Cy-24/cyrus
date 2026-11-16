@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+const base = import.meta.env.BASE_URL;
+const entries = (await getCollection('notebook', ({ data }) => !data.draft)).sort((a,b) => (b.data.updatedAt?.valueOf() ?? b.data.publishedAt?.valueOf() ?? 0) - (a.data.updatedAt?.valueOf() ?? a.data.publishedAt?.valueOf() ?? 0));
+const categories = [...new Set(entries.map((entry) => entry.data.category))].sort();
+const tags = [...new Set(entries.flatMap((entry) => entry.data.tags))].sort();
+const formatDate = (date?: Date) => date ? new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: 'numeric' }).format(date) : 'Undated';
+---
+<BaseLayout title="Notebook" description="Research notes, methods, technical explanations, and evolving ideas." section="notebook">
+  <header class="page-intro notebook-intro"><p class="eyebrow">NOTEBOOK / {String(entries.length).padStart(2,'0')} PUBLISHED ENTRIES</p><h1>A place for<br /><em>unfinished thinking.</em></h1><p class="page-lede">An evolving notebook of research notes, technical explorations, explanations, and ideas. Some entries are polished; others are works in progress.</p></header>
+  <section class="section-block archive-section">
+    <div class="section-heading"><div><p class="eyebrow">Browse entries</p><h2>Notebook entries</h2></div><span class="archive-count">{entries.length} NOTES</span></div>
+    {entries.length ? <>
+      <div class="filter-toolbar" data-filter-root="notebook"><label class="search-control"><span class="sr-only">Search notes</span><input type="search" placeholder="Search notes…" data-filter-search /></label><label><span class="sr-only">Filter by category</span><select data-filter-category><option value="">All categories</option>{categories.map((item) => <option value={item}>{item}</option>)}</select></label><label><span class="sr-only">Filter by tag</span><select data-filter-tag><option value="">All tags</option>{tags.map((item) => <option value={item}>{item}</option>)}</select></label></div>
+      <p class="filter-results" data-filter-count>{entries.length} notes</p>
+      <div class="notebook-list" data-filter-list>{entries.map((entry) => <a class="notebook-row rich-row" href={`${base}notebook/${entry.data.slug ?? entry.id}/`} data-filter-item data-search={`${entry.data.title} ${entry.data.description} ${entry.data.category} ${entry.data.tags.join(' ')}`.toLowerCase()} data-category={entry.data.category} data-tag={entry.data.tags.join('|')}><span class="notebook-date">{formatDate(entry.data.updatedAt ?? entry.data.publishedAt)}</span><span class="notebook-row-copy"><strong>{entry.data.title}</strong><small>{entry.data.description}</small><span class="tag-list">{entry.data.tags.map((tag) => <i>{tag}</i>)}</span></span><span class="row-arrow">↗</span></a>)}</div>
+      <p class="filter-no-results" data-filter-empty hidden>No notes match these filters.</p>
+    </> : <div class="quiet-empty"><span class="empty-mark">N / 0</span><p>The notebook is ready for research notes, methods, tutorials, and evolving ideas. Add a Markdown or MDX document under <code>src/content/notebook/</code>.</p></div>}
+  </section>
+</BaseLayout>

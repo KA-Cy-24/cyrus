@@ -1,0 +1,67 @@
+---
+import '../styles/global.css';
+import 'katex/dist/katex.min.css';
+import Navigation from '../components/Navigation.astro';
+import Footer from '../components/Footer.astro';
+import site from '../data/site.json';
+import { getCollection } from 'astro:content';
+
+interface Props {
+  title: string;
+  description?: string;
+  section?: string;
+  noIndex?: boolean;
+}
+const { title, description = site.description, section = 'home', noIndex = false } = Astro.props;
+const customPages = await getCollection('pages', ({ data }) => !data.draft && data.showInNavigation);
+const customNavigation = customPages
+  .sort((a, b) => a.data.navigationOrder - b.data.navigationOrder)
+  .map((entry) => ({ label: entry.data.title, href: `/${entry.data.slug}/`, section: `custom:${entry.data.slug}` }));
+const navigation = [...site.navigation, ...customNavigation];
+const base = import.meta.env.BASE_URL;
+const activeSection = section.startsWith('custom:') ? section : section;
+const pageTitle = title === site.shortName ? title : `${title} — ${site.shortName}`;
+---
+<!doctype html>
+<html lang="en" data-theme="light" data-section={activeSection}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#f6f7f8" />
+    <meta name="description" content={description} />
+    {noIndex && <meta name="robots" content="noindex,nofollow" />}
+    <title>{pageTitle}</title>
+    <link rel="icon" type="image/svg+xml" href={`${base}illustrations/favicon.svg`} />
+    <script is:inline>
+      (() => {
+        try {
+          const saved = localStorage.getItem('kl-theme');
+          const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.dataset.theme = saved || (systemDark ? 'dark' : 'light');
+        } catch (_) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div id="top" class="site-shell">
+      <div class="site-container">
+        <Navigation items={navigation} active={activeSection} base={base} />
+        <main id="main-content" data-pagefind-body><slot /></main>
+        <Footer />
+      </div>
+    </div>
+    <script>
+      import { initTheme } from '../scripts/theme';
+      import { initNavigation } from '../scripts/navigation';
+      import { initMermaid } from '../scripts/mermaid';
+      import { initPagefind } from '../scripts/pagefind';
+      import '../scripts/filters';
+      initTheme();
+      initNavigation();
+      initMermaid();
+      initPagefind();
+    </script>
+  </body>
+</html>

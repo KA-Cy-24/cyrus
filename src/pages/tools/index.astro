@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolCard from '../../components/ToolCard.astro';
+import { getCollection } from 'astro:content';
+const base = import.meta.env.BASE_URL;
+const entries = await getCollection('tools', ({ data }) => !data.draft);
+const categories = [...new Set(entries.map((entry) => entry.data.category))].sort();
+const statuses = [...new Set(entries.map((entry) => entry.data.status))].sort();
+const tags = [...new Set(entries.flatMap((entry) => entry.data.tags))].sort();
+---
+<BaseLayout title="Tools" description="Scientific tools, software, websites, and interactive applications." section="tools">
+  <header class="page-intro"><p class="eyebrow">TOOLS / {String(entries.length).padStart(2,'0')} PUBLISHED ENTRIES</p><h1>Things built<br /><em>to be useful.</em></h1><p class="page-lede">A collection of scientific utilities, websites, interactive applications, and open-source software.</p></header>
+  <section class="section-block archive-section">
+    <div class="section-heading"><div><p class="eyebrow">Directory</p><h2>Tools & applications</h2></div><span class="archive-count">{entries.length} RECORDS</span></div>
+    {entries.length ? <>
+      <div class="filter-toolbar" data-filter-root="tools"><label class="search-control"><span class="sr-only">Search tools</span><input type="search" placeholder="Search tools…" data-filter-search /></label><label><span class="sr-only">Filter by category</span><select data-filter-category><option value="">All categories</option>{categories.map((item) => <option value={item}>{item}</option>)}</select></label><label><span class="sr-only">Filter by status</span><select data-filter-status><option value="">All statuses</option>{statuses.map((item) => <option value={item}>{item}</option>)}</select></label><label><span class="sr-only">Filter by tag</span><select data-filter-tag><option value="">All tags</option>{tags.map((item) => <option value={item}>{item}</option>)}</select></label></div>
+      <p class="filter-results" data-filter-count>{entries.length} tools</p>
+      <div class="tool-grid" data-filter-list>{entries.map((entry) => <ToolCard entry={entry} base={base} />)}</div>
+      <p class="filter-no-results" data-filter-empty hidden>No tools match these filters.</p>
+    </> : <div class="tools-empty"><span class="empty-symbol">&#123; &#125;</span><h2>No tools registered yet.</h2><p>This directory is intentionally empty. Add a Markdown record to <code>src/content/tools/</code> when a tool is ready to be listed.</p></div>}
+  </section>
+</BaseLayout>

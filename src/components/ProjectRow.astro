@@ -1,0 +1,15 @@
+---
+const { entry, base = '/' } = Astro.props;
+const data = entry.data;
+const slug = data.slug ?? entry.id;
+const href = `${base}projects/${slug}/`;
+---
+<article class="project-row" data-filter-item data-search={`${data.title} ${data.description} ${data.category} ${data.type} ${data.tags.join(' ')}`.toLowerCase()} data-category={data.category} data-status={data.status} data-type={data.type} data-year={data.year ?? ''} data-tag={data.tags.join('|')}>
+  <a class="project-row-main" href={href}>
+    <span class="project-row-id">{data.id}</span>
+    <span class="project-row-copy"><strong class="mono-title">{data.title}</strong><small>{data.description}</small></span>
+    <span class="project-row-meta">{data.category}{data.year ? ` / ${data.year}` : ''}</span>
+    <span class="project-row-arrow" aria-hidden="true">↗</span>
+  </a>
+  {data.tags.length > 0 && <div class="project-row-tags">{data.tags.map((tag: string) => <span>{tag}</span>)}</div>}
+</article>

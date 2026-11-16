@@ -1,0 +1,27 @@
+---
+import site from '../data/site.json';
+interface NavItem { label: string; href: string; section?: string; }
+const { items = [], active = 'home', base = '/' } = Astro.props as { items: NavItem[]; active: string; base: string };
+const withBase = (path: string) => `${base}${path.replace(/^\/+/, '')}`;
+---
+<header class="site-header" data-pagefind-ignore>
+  <a class="wordmark" href={withBase('/')} aria-label={`${site.shortName} home`}>
+    <span>{site.shortName}</span><i aria-hidden="true">.</i>
+  </a>
+  <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" aria-label="Open navigation">
+    <span></span><span></span>
+  </button>
+  <nav id="primary-navigation" class="primary-navigation" aria-label="Primary navigation">
+    {items.map((item) => (
+      <a href={withBase(item.href)} class:list={{ active: item.section === active }} aria-current={item.section === active ? 'page' : undefined}>
+        {item.label}
+      </a>
+    ))}
+    <a class="search-link" href={withBase("/search/")} aria-label="Search the archive" title="Search">⌕</a>
+    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch color theme" title="Switch color theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5Z"/></svg>
+    </button>
+  </nav>
+</header>
+<div class="mobile-scrim" data-nav-scrim></div>

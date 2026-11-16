@@ -1,0 +1,19 @@
+---
+const { entry, base = '/' } = Astro.props;
+const data = entry.data;
+const slug = data.slug ?? entry.id;
+const href = `${base}projects/${slug}/`;
+const cover = data.cover ? `${base}${data.cover.replace(/^\/+/, '')}` : null;
+---
+<article class="project-card" data-filter-item data-search={`${data.title} ${data.description} ${data.category} ${data.tags.join(' ')}`.toLowerCase()} data-category={data.category} data-status={data.status} data-type={data.type} data-year={data.year ?? ""} data-tag={data.tags.join("|")}>
+  <a class="project-card-link" href={href}>
+    <div class="project-cover">
+      {cover ? <img src={cover} alt={data.coverAlt ?? ''} loading="lazy" /> : <div class="cover-placeholder" aria-hidden="true"><span>{String(data.year ?? '—')}</span><b>{data.category}</b><i>↗</i></div>}
+    </div>
+    <div class="project-card-meta"><span>{data.category}</span><span>{data.status}</span></div>
+    <h3 class="mono-title">{data.title}</h3>
+    <p>{data.description}</p>
+    <div class="tag-list">{data.tags.slice(0, 4).map((tag: string) => <span>{tag}</span>)}</div>
+    <span class="text-link">Explore project <b aria-hidden="true">↗</b></span>
+  </a>
+</article>

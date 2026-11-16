@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+import Interactive from '../../components/mdx/Interactive.astro';
+import Figure from '../../components/mdx/Figure.astro';
+import Callout from '../../components/mdx/Callout.astro';
+const base = import.meta.env.BASE_URL;
+const components = { Interactive, Figure, Callout };
+export async function getStaticPaths() {
+  const entries = await getCollection('projects', ({ data }) => !data.draft);
+  return entries.map((entry) => ({ params: { slug: entry.data.slug ?? entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const data = entry.data;
+const links = data.links ?? {};
+---
+<BaseLayout title={data.title} description={data.description} section="projects">
+  <article class="content-page project-detail">
+    <a class="back-link" href={`${base}projects/`}>← All projects</a>
+    <header class="article-header"><p class="eyebrow">{data.category} / {data.type} / {data.year ?? 'UNDATED'}</p><h1 class="mono-title">{data.title}</h1><p class="article-lede">{data.description}</p><div class="article-meta"><span>{data.status}</span>{data.tags.map((tag) => <span>{tag}</span>)}</div></header>
+    {data.cover && <img class="article-cover" src={`${base}${data.cover.replace(/^\/+/, '')}`} alt={data.coverAlt ?? ''} />}
+    <div class="prose"><Content components={components} /></div>
+    <footer class="article-links">{links.github && <a href={links.github} target="_blank" rel="noopener noreferrer">Repository ↗</a>}{links.publication && <a href={links.publication} target="_blank" rel="noopener noreferrer">Publication ↗</a>}{links.demo && <a href={links.demo} target="_blank" rel="noopener noreferrer">Demo ↗</a>}</footer>
+  </article>
+</BaseLayout>

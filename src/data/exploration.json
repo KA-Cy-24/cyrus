@@ -1,0 +1,19 @@
+{
+  "eyebrow": "",
+  "title": "Areas of exploration",
+  "description": "Research themes, computational methods, and software directions that currently shape the archive.",
+  "items": [
+    {
+      "title": "Biological systems & molecular mechanisms",
+      "href": "/research-interests/"
+    },
+    {
+      "title": "Computational methods & machine learning",
+      "href": "/research-interests/"
+    },
+    {
+      "title": "Scientific software & research infrastructure",
+      "href": "/tools/"
+    }
+  ]
+}

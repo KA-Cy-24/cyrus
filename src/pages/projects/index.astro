@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import ProjectRow from '../../components/ProjectRow.astro';
+import { getCollection } from 'astro:content';
+const base = import.meta.env.BASE_URL;
+const entries = (await getCollection('projects', ({ data }) => !data.draft)).sort((a,b) => (b.data.year ?? 0) - (a.data.year ?? 0));
+const featured = entries.filter((entry) => entry.data.featured).sort((a,b) => (a.data.featuredOrder ?? 999) - (b.data.featuredOrder ?? 999));
+const categories = [...new Set(entries.map((entry) => entry.data.category))].sort();
+const statuses = [...new Set(entries.map((entry) => entry.data.status))].sort();
+const types = [...new Set(entries.map((entry) => entry.data.type))].sort();
+const years = [...new Set(entries.map((entry) => entry.data.year).filter(Boolean))].sort((a,b) => Number(b) - Number(a));
+const tags = [...new Set(entries.flatMap((entry) => entry.data.tags))].sort();
+---
+<BaseLayout title="Projects" description="Research, computational projects, and engineering work." section="projects">
+  <header class="page-intro"><p class="eyebrow">PROJECTS / {String(entries.length).padStart(2,'0')} PUBLISHED ENTRIES</p><h1>Selected work<br /><em>& investigations.</em></h1><p class="page-lede">Research projects, computational experiments, and engineering work. Each entry documents a question, an approach, and what emerged from it.</p></header>
+  {featured.length > 0 && <section class="section-block"><div class="section-heading"><div><p class="eyebrow">Featured selection</p><h2>Featured projects</h2></div></div><div class="project-grid featured-grid">{featured.map((entry) => <ProjectCard entry={entry} base={base} />)}</div></section>}
+  <section class="section-block archive-section">
+    <div class="section-heading"><div><p class="eyebrow">Browse all records</p><h2>All projects</h2></div><span class="archive-count">{entries.length} RECORDS</span></div>
+    {entries.length ? <>
+      <div class="filter-toolbar" data-filter-root="projects">
+        <label class="search-control"><span class="sr-only">Search projects</span><input type="search" placeholder="Search projects…" data-filter-search /></label>
+        <label><span class="sr-only">Filter by category</span><select data-filter-category><option value="">All categories</option>{categories.map((item) => <option value={item}>{item}</option>)}</select></label>
+        <label><span class="sr-only">Filter by project type</span><select data-filter-type><option value="">All types</option>{types.map((item) => <option value={item}>{item}</option>)}</select></label>
+        <label><span class="sr-only">Filter by status</span><select data-filter-status><option value="">All statuses</option>{statuses.map((item) => <option value={item}>{item}</option>)}</select></label>
+        <label><span class="sr-only">Filter by year</span><select data-filter-year><option value="">All years</option>{years.map((item) => <option value={item}>{item}</option>)}</select></label>
+        <label><span class="sr-only">Filter by tag</span><select data-filter-tag><option value="">All tags</option>{tags.map((item) => <option value={item}>{item}</option>)}</select></label>
+      </div>
+      <p class="filter-results" data-filter-count>{entries.length} projects</p>
+      <div class="project-list" data-filter-list>{entries.map((entry) => <ProjectRow entry={entry} base={base} />)}</div>
+      <p class="filter-no-results" data-filter-empty hidden>No projects match these filters.</p>
+    </> : <div class="quiet-empty"><span class="empty-mark">P / 0</span><p>The project archive is ready. Add a Markdown file to <code>src/content/projects/</code> to publish your first entry.</p><a href={`${base}notebook/`}>Explore the notebook ↗</a></div>}
+  </section>
+</BaseLayout>

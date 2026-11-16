@@ -1,0 +1,15 @@
+---
+const { src, alt = '', caption = '', credit = '', number = '' } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const source = String(src ?? '');
+const basePrefix = base.replace(/\/$/, '');
+const imageSrc = source.startsWith('http') ? source : (basePrefix && source.startsWith(`${basePrefix}/`) ? source : `${base}${source.replace(/^\/+/, '')}`);
+---
+<figure class="scientific-figure">
+  <img src={imageSrc} alt={alt} loading="lazy" />
+  {(caption || credit || number) && <figcaption>
+    {number && <span class="figure-number">Figure {number}.</span>}
+    {caption}
+    {credit && <span class="figure-credit"> {credit}</span>}
+  </figcaption>}
+</figure>

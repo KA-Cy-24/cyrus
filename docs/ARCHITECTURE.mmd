@@ -1,0 +1,54 @@
+flowchart TD
+    subgraph CONTENT["Markdown / MDX content"]
+        P[Projects]
+        T[Tools]
+        N[Notebook]
+        C[CV entries]
+        PG[Custom pages]
+        A[Images and figures]
+    end
+    subgraph ASTRO["Astro content layer"]
+        S[Zod schemas]
+        D[Automatic discovery]
+        R[Static route generation]
+        V[ID, slug and reference validation]
+    end
+    subgraph UI["Presentation layer"]
+        L[Shared editorial layouts]
+        DS[Graphite design system + section accents]
+        H[Homepage]
+        PA[Projects]
+        TO[Tools]
+        NB[Notebook]
+        CV[CV.live]
+        CP[Custom pages]
+    end
+    subgraph EXT["Interactive extension system"]
+        M[Discovered modules]
+        I[MDX Interactive component]
+        M --> I
+    end
+    P --> S
+    T --> S
+    N --> S
+    C --> S
+    PG --> S
+    A --> D
+    S --> D --> R
+    S --> V
+    R --> H
+    R --> PA
+    R --> TO
+    R --> NB
+    R --> CV
+    R --> CP
+    I --> NB
+    I --> PA
+    I --> CP
+    L --> UI
+    DS --> UI
+    UI --> BUILD[Astro static build]
+    V --> BUILD
+    BUILD --> SEARCH[Pagefind index]
+    SEARCH --> DIST[dist/]
+    DIST --> GH[GitHub Pages]

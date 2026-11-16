@@ -1,0 +1,42 @@
+{
+  "eyebrow": "Curriculum vitae",
+  "title": "Kourosh Afshinjoo",
+  "description": "A structured, continuously maintained record of education, research, teaching, and scientific work.",
+  "lede": "",
+  "printLabel": "Save CV as PDF",
+  "footnote": "This page is the live version of the CV. Use the print control to export a PDF copy.",
+  "groups": [
+    [
+      "education",
+      "Education"
+    ],
+    [
+      "experience",
+      "Research and Teaching Experience"
+    ],
+    [
+      "award",
+      "Awards and Honors"
+    ],
+    [
+      "leadership",
+      "Leadership Experience"
+    ],
+    [
+      "skill",
+      "Technical Skills"
+    ]
+  ],
+  "contact": [
+    {
+      "label": "Email",
+      "value": "kshafshinjoo@gmail.com",
+      "href": "mailto:kshafshinjoo@gmail.com"
+    },
+    {
+      "label": "GitHub",
+      "value": "github.com/KA-Cy-24",
+      "href": "https://github.com/KA-Cy-24"
+    }
+  ]
+}

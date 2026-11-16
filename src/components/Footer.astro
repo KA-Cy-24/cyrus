@@ -1,0 +1,9 @@
+
+---
+import site from '../data/site.json';
+const year = new Date().getFullYear();
+---
+<footer class="site-footer" data-pagefind-ignore>
+  <p>© {year} {site.shortName}. {site.footerText}</p>
+  <a href="#top" class="back-to-top">{site.footerBackToTopLabel} ↑</a>
+</footer>

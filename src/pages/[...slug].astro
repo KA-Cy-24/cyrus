@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+import Interactive from '../components/mdx/Interactive.astro';
+import Figure from '../components/mdx/Figure.astro';
+import Callout from '../components/mdx/Callout.astro';
+import site from '../data/site.json';
+const components = { Interactive, Figure, Callout };
+export async function getStaticPaths() {
+  const entries = await getCollection('pages', ({ data }) => !data.draft);
+  return entries.map((entry) => ({ params: { slug: entry.data.slug }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const data = entry.data;
+const base = import.meta.env.BASE_URL;
+const section = data.slug === 'about' ? 'about' : `custom:${data.slug}`;
+---
+<BaseLayout title={data.title} description={data.description} section={section}>
+  <article class:list={['content-page', data.layout === 'article' ? 'notebook-article' : 'editorial-page']}>
+    <a class="back-link" href={`${base}`}>← Home</a>
+    <header class="article-header">{site.shortName && <p class="eyebrow">{site.shortName} / {data.title.toUpperCase()}</p>}<h1>{data.title}</h1>{data.description && <p class="article-lede">{data.description}</p>}</header>
+    <div class="prose"><Content components={components} /></div>
+  </article>
+</BaseLayout>

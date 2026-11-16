@@ -1,0 +1,19 @@
+---
+const { entry, base = '/' } = Astro.props;
+const data = entry.data;
+const slug = data.slug ?? entry.id;
+const href = `${base}tools/${slug}/`;
+const cover = data.cover ? `${base}${data.cover.replace(/^\/+/, '')}` : null;
+const launch = data.links?.launch;
+---
+<article class="tool-card" data-filter-item data-search={`${data.title} ${data.description} ${data.category} ${data.tags.join(' ')}`.toLowerCase()} data-category={data.category} data-status={data.status} data-tag={data.tags.join("|")}>
+  <a class="tool-card-link" href={href}>
+    <div class="tool-card-top"><span class="tool-index">TOOL / {data.id}</span><span class="tool-status">{data.status}</span></div>
+    {cover && <img class="tool-cover" src={cover} alt={data.coverAlt ?? ''} loading="lazy" />}
+    <h3 class="mono-title">{data.title}</h3>
+    <p>{data.description}</p>
+    <div class="tag-list">{data.tags.slice(0, 4).map((tag: string) => <span>{tag}</span>)}</div>
+    <span class="text-link">View tool <b aria-hidden="true">↗</b></span>
+  </a>
+  {launch && <a class="tool-launch" href={launch} target="_blank" rel="noopener noreferrer">Launch ↗</a>}
+</article>
